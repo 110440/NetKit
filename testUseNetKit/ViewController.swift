@@ -16,7 +16,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        
+        /*
         let key = "8dd33c1df29d46e3909f174f1f543c5f"
         let city = "湛江"
         
@@ -43,7 +43,18 @@ class ViewController: UIViewController {
             
         }
         req.cancel()
+        */
         
+        //test downloadManager
+        let urlStr = "http://jsdx1.downg.com//201602/langdunv_7.3_DownG.com.rar"
+        let downloader = TTDownloadManager(downloadDir: "TTDownload", backgroundEnable: true)
+        downloader.finished = {task in
+            print("filePath:\(task.filePath)")
+        }
+        downloader.progress = { task,_,_ in
+            print("progress:\(task.progress)")
+        }
+        downloader.newTask(urlStr)
     }
 
 }
