@@ -11,13 +11,13 @@ import Foundation
 
 internal let backgroundSessionIdentifier = (NSBundle.mainBundle().bundleIdentifier)! + "_tt_net_SessionIdentifier"
 
-public typealias TTDownloadFinishedBlock = (task:TTDownloadTask)->Void
-public typealias TTDownloadProgressBlock = (task:TTDownloadTask,totalBytesWritten:Int64,totalBytesExpectedToWrite:Int64)->Void
-public typealias TTDownloadFinishedErrorBlock = (task:TTDownloadTask,error:NSError)->Void
+public typealias downloadFinishedBlock = (task:TTDownloadTask)->Void
+public typealias downloadProgressBlock = (task:TTDownloadTask,totalBytesWritten:Int64,totalBytesExpectedToWrite:Int64)->Void
+public typealias downloadFinishedErrorBlock = (task:TTDownloadTask,error:NSError)->Void
 
-let TTDocPath = (NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first)!
+internal let TTDocPath = (NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first)!
 
-func TTGetDownloadPath(directoryName:String)->String{
+internal func TTGetDownloadPath(directoryName:String)->String{
     
     let downloadPath = (TTDocPath as NSString).stringByAppendingPathComponent(directoryName)
     if !NSFileManager.defaultManager().fileExistsAtPath(downloadPath){
@@ -29,7 +29,7 @@ func TTGetDownloadPath(directoryName:String)->String{
 }
 
 
-func TTGetFileSizeStr(filePath:String)->String?{
+public func TTGetFileSizeStr(size:Int64)->String{
     
     func calculateFileSizeInUnit(contentLength : Int64) -> Float {
         let dataLength : Float64 = Float64(contentLength)
@@ -56,6 +56,13 @@ func TTGetFileSizeStr(filePath:String)->String?{
         }
     }
     
+    let sizeStr = String(format: "%.1f", calculateFileSizeInUnit(size) )
+    let sizeUnitStr = String( calculateUnit(size))
+    return sizeStr + sizeUnitStr
+}
+
+public func TTGetFileSizeStrByPath(filePath:String)->String?{
+    
     let systemAttributes: AnyObject?
     var fileSize:Int64 = 0
     do {
@@ -67,9 +74,7 @@ func TTGetFileSizeStr(filePath:String)->String?{
         return nil
     }
     
-    let sizeStr = String(calculateFileSizeInUnit(fileSize))
-    let sizeUnitStr = String( calculateFileSizeInUnit(fileSize))
-    return sizeStr + sizeUnitStr
+    return TTGetFileSizeStr(fileSize)
 }
 
 

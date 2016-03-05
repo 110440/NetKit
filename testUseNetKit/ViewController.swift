@@ -7,54 +7,44 @@
 //
 
 import UIKit
-import NetKit
-import Alamofire
 
-class ViewController: UIViewController {
+
+class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-        
-        /*
-        let key = "8dd33c1df29d46e3909f174f1f543c5f"
-        let city = "湛江"
-        
-        // config netKit
-        NetKitGloble.willReturnObjectBlock = { json -> (JSON?,NSError?) in
-            let error_code = json["error_code"].intValue
-            if error_code != 0 {
-                let e = NSError(domain:json["reason"].stringValue, code: error_code, userInfo: nil )
-                return (nil,e)
-            }
-            return (json["result"],nil)
+   
+        self.title = "主页"
+        self.automaticallyAdjustsScrollViewInsets = true
+        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    }
+
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 2
+    }
+    
+    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
+        if indexPath.row == 0{
+            cell.textLabel?.text = "NetKit"
+        }else{
+            cell.textLabel?.text = "DownloadManager"
         }
-        NetKitGloble.addingParameters["key"] = key
-        
-        let req = Alamofire.request(testAPI.GetWeather(city)).responseObject { (response, object:ResultObj?, error) -> () in
-            
-            if error?.code == NSURLErrorCancelled{
-                print("取消")
-            }
-            
-            if let object = object{
-                dump(object)
-            }
-            
+        return cell
+    }
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.row == 0 {
+            let vc = TestNetKit()
+            self.navigationController?.pushViewController(vc, animated: true)
+        }else{
+            let vc = TestDownload()
+            self.navigationController?.pushViewController(vc, animated: true)
         }
-        req.cancel()
-        */
-        
-        //test downloadManager
-        let urlStr = "http://jsdx1.downg.com//201602/langdunv_7.3_DownG.com.rar"
-        let downloader = TTDownloadManager(downloadDir: "TTDownload", backgroundEnable: true)
-        downloader.finished = {task in
-            print("filePath:\(task.filePath)")
-        }
-        downloader.progress = { task,_,_ in
-            print("progress:\(task.progress)")
-        }
-        downloader.newTask(urlStr)
     }
 
 }

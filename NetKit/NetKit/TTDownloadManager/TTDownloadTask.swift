@@ -8,15 +8,13 @@
 
 import Foundation
 
-
+//MARK:- TaskState
 public enum TTDownloadTaskState : Int {
-    
     case Running
     case Suspended
-    case Canceling
+    case Failed
     case Completed
 }
-
 
 //MARK:- DownloadTask
 public class TTDownloadTask {
@@ -26,10 +24,25 @@ public class TTDownloadTask {
     
     public internal(set) var state:TTDownloadTaskState = .Suspended
     
+    public internal(set) var resumeSize:Int64 = 0
+    public var fileSize:Int64 = 0 //(正在获取文件大小,或服务器不提供文件大小信息)
+    public var StringForFileSize:String {
+        return TTGetFileSizeStr(self.fileSize)
+    }
+    
+    internal var totalBytesWritten:Int64 = 0
+    internal var totalBytesExpectedToWrite:Int64 = 0
+    
+    public var stringForFileSizeWritten:String{
+        return TTGetFileSizeStr( self.totalBytesWritten + self.resumeSize )
+    }
+    
     // 0 ~ 100
-    public var progress:Int = 0
-    public var alreadyGetLen:Int64 = 0
-    public var fileSize:Int64? = nil
+    public var progress:Int {
+        if self.finished { return 100 }
+        if self.fileSize <= 0 { return 0 }
+        return Int(Float(self.totalBytesWritten + self.resumeSize ) / Float(self.fileSize) * 100)
+    }
     
     internal var session:NSURLSession?
     internal var task:NSURLSessionDownloadTask?
@@ -37,10 +50,7 @@ public class TTDownloadTask {
     internal var resumeData:NSData? {
         
         get{
-            if NSFileManager.defaultManager().fileExistsAtPath(self.fileCachePath){
-                return NSData(contentsOfFile: self.fileCachePath)
-            }
-            return nil
+            return NSData(contentsOfFile: self.fileCachePath)
         }
         set{
             
@@ -64,7 +74,8 @@ public class TTDownloadTask {
         return self.userInfoData[key]
     }
     
-    public init(urlStr:String,dir:String){
+    // 只能由 DownloadManager 创建 task , 检查 url 合法性
+    internal init(urlStr:String,dir:String){
         self.url = NSURL(string: urlStr)!
         self.directoryName = dir
     }
@@ -86,6 +97,7 @@ public class TTDownloadTask {
             let str = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(nil, (self.url.absoluteString as CFString) ,("" as CFString), UInt32( CFStringEncodings.GB_18030_2000.rawValue))
             name = str as String
         }
+        if name == nil || name?.characters.count <= 0 { return "未知文件名" }
         return (name! as NSString).lastPathComponent
     }
     
@@ -100,43 +112,44 @@ public class TTDownloadTask {
 
     public func resume(){
         
+        if self.finished { return }
+        
         switch self.state{
-        case .Completed,.Running:
-            return
-        default:
-            break
+        case .Completed,.Running: return
+        default: break
         }
         
         let request = NSMutableURLRequest(URL: self.url)
-        
         if let resumeData = self.resumeData {
             
             let startPos = Int64( resumeData.length )
-            //print("resume starPos:\(startPos)")
             let rangeHeadStr = "bytes=\(startPos)-"
             request.setValue(rangeHeadStr, forHTTPHeaderField: "Range")
-            self.alreadyGetLen = startPos
+            self.resumeSize = startPos
         }
-        self.task = self.session?.downloadTaskWithRequest(request)
-        self.task?.resume()
+        self.task = self.session!.downloadTaskWithRequest(request)
+        self.task!.resume()
         self.state = .Running
     }
     
     public func suspend(){
         
+        if self.finished { return }
+        
         switch self.state{
-        case .Completed,.Canceling,.Suspended:
-            return
-        default:
-            break
+        case .Completed,.Failed,.Suspended: return
+        default: break
         }
         
         guard let task =  self.task else {return}
         task.cancelByProducingResumeData { (resumeData) -> Void in }
-        //self.state = .Canceling // error handle 设置
+        //self.state = .Failed // error handle 设置
     }
     
     func deleteLocalFile(){
+        if self.state == .Running {
+            self.task!.cancel()
+        }
         let filePath = self.filePath
         if NSFileManager.defaultManager().fileExistsAtPath(filePath){
             try! NSFileManager.defaultManager().removeItemAtPath(filePath)
@@ -148,6 +161,7 @@ public class TTDownloadTask {
             try! NSFileManager.defaultManager().removeItemAtPath(filePath)
         }
     }
+    
 }
 
 //MARK: 序列化
@@ -157,9 +171,8 @@ extension TTDownloadTask{
         let dic = NSMutableDictionary()
         dic["url"] = self.url.absoluteString
         dic["dir"] = self.directoryName
-        dic["progress"] = self.progress
-        dic["alreadyGetLen"] = String(self.alreadyGetLen)
-        dic["state"] = self.state.rawValue
+        dic["fileSize"] = NSNumber(longLong: self.fileSize ?? 0)
+        dic["state"] = NSNumber(long: self.state.rawValue )
         return dic
     }
     
@@ -167,14 +180,17 @@ extension TTDownloadTask{
         
         let url = dicData["url"] as! String
         let dir = dicData["dir"] as! String
-        let progress = dicData["progress"] as! Int
-        let alreadyGetLen = dicData["alreadyGetLen"] as! String
-        let state = TTDownloadTaskState(rawValue: (dicData["state"] as! Int ) )
+        let fileSize = (dicData["fileSize"] as! NSNumber).longLongValue
+        let state = TTDownloadTaskState(rawValue: ( dicData["state"] as! NSNumber ).longValue )
         let task = TTDownloadTask(urlStr: url, dir: dir)
-        task.alreadyGetLen = Int64(alreadyGetLen)!
-        task.progress = progress
+        task.fileSize = fileSize
         task.state = state!
         
+        if let data = task.resumeData {
+            task.resumeSize = Int64(data.length)
+        }else if task.finished {
+            task.resumeSize = fileSize
+        }
         return task
     }
 }

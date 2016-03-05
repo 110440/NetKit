@@ -8,19 +8,22 @@
 
 import Foundation
 
-//TODO: 进入后台模式后的下载方式
 //MARK:- DownloadManager
 public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLSessionDelegate,NSURLSessionTaskDelegate {
     
+    // 下载文件存放目录，可创建多个不同目录的 DownloadManager
     private let downloadDir:String
+    
     private let backgroundEnable:Bool
+    
+    public var timeout:Double = 15.0
+    
+    //后台模式，要在 AppDelegate handleEventsForBackgroundURLSession 里面对此变量赋值
+    public var completionHandler:(()->Void)?
     
     private lazy var taskListFilePath:String = {
         return ( TTGetDownloadPath( self.downloadDir ) as NSString).stringByAppendingPathComponent("TTdownloadList.plist")
     }()
-    
-    public var timeout:Double = 15.0
-    public var completionHandler:(()->Void)? //后台下载完成
     
     private lazy var session:NSURLSession = {
         let q = NSURLSession.sharedSession().delegateQueue
@@ -35,9 +38,23 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         return s
     }()
     
-    public var finished:TTDownloadFinishedBlock?
-    public var progress:TTDownloadProgressBlock?
-    public var finishedWithError:TTDownloadFinishedErrorBlock?
+    // callBack
+    public var finishedBlock:downloadFinishedBlock?
+    public var progressBlock:downloadProgressBlock?
+    public var finishedWithErrorBlock:downloadFinishedErrorBlock?
+    public func finishedBlock(block:downloadFinishedBlock)->Self{
+        self.finishedBlock = block
+        return self
+    }
+    public func progressBlock(block:downloadProgressBlock)->Self{
+        self.progressBlock = block
+        return self
+    }
+    public func finishedWithErrorBlock(block:downloadFinishedErrorBlock)->Self{
+        self.finishedWithErrorBlock = block
+        return self
+    }
+    
     
     public var taskList = [TTDownloadTask]()
     
@@ -80,10 +97,10 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         taskArry.writeToFile(self.taskListFilePath, atomically: true )
     }
 
-    
     public func newTask(urlStr:String)->TTDownloadTask?{
         
         if let _ = self.taskByURLStr(urlStr) { return nil }
+        guard let _ = NSURL(string: urlStr) else { print("TTDownload newTask url;\(urlStr) 不合法 ") ;return nil}
         
         let task = TTDownloadTask(urlStr: urlStr , dir: self.downloadDir)
         task.session = self.session
@@ -105,7 +122,7 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
     public func startAllUnfinishTask(){
         let tasks = self.unFinishedList
         for task in tasks{
-            self.newTask(task.url.absoluteString)
+            task.resume()
         }
     }
     
@@ -128,8 +145,6 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
             self.deleteTaskByURL(task.url.absoluteString)
         }
     }
-    // 
-
     
     //MARK: downloadTask delegate
     
@@ -139,10 +154,9 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         
         guard let downloadURL = downloadTask.originalRequest?.URL?.absoluteString else { return }
         
-        guard let task = self.taskByURLStr(downloadURL) else { print("找不到 task "); return}
+        guard let task = self.taskByURLStr(downloadURL) else { print("TTDownloadManager : 找不到对应的 donwnloadTask "); return}
         
         let filePath = task.filePath
-        let fileLocalUrl = NSURL.fileURLWithPath(filePath)
         do{
             if NSFileManager.defaultManager().fileExistsAtPath(filePath){
                 try! NSFileManager.defaultManager().removeItemAtPath(filePath)
@@ -158,27 +172,32 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
                 
                 let appenData = NSData(contentsOfFile: location.path! )
                 fileHandle?.writeData(appenData ?? NSData() )
+                fileHandle?.synchronizeFile()
                 fileHandle?.closeFile()
                 
                 task.deleteCachefile()
             }else{
-                try NSFileManager.defaultManager().moveItemAtURL(location, toURL: fileLocalUrl)
+                try NSFileManager.defaultManager().moveItemAtURL(location, toURL:NSURL.fileURLWithPath(filePath))
             }
             
             task.state = .Completed
             task._finished = true
-            task.progress = 100
             
-            if let finish = self.finished {
-                finish(task: task)
+            if let finish = self.finishedBlock {
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    finish(task: task)
+                })
             }
             
         }catch let error {
             
-            task.state = .Canceling
+            task.state = .Failed
             print( "TTDownloadManager : moveItemAtURL failed e:\(error)")
-            if let errorHandle = self.finishedWithError{
-                errorHandle(task: task, error: error as NSError)
+            if let errorHandle = self.finishedWithErrorBlock{
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    errorHandle(task: task, error: error as NSError)
+                })
+
             }
         }
         
@@ -207,8 +226,6 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
                     tempFilePath = (tempDirPath as NSString).stringByAppendingPathComponent(tempFileName)
                     
                     let tempFileData = NSData(contentsOfFile: tempFilePath!)
-                    
-                    //print("已接收：\(tempFileData?.length)")
                     task.resumeData = tempFileData
                     
                 }else if resumeDataVersion == 1{
@@ -222,27 +239,40 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
             }
         }
         
-        if e.code != NSURLErrorCancelled {
-            if let finishedWithError = self.finishedWithError{
-                finishedWithError(task: task, error: e)
+        if e.code == NSURLErrorCancelled {
+            task.state = .Suspended
+        }else{
+            task.state = .Failed
+            if let finishedWithError = self.finishedWithErrorBlock{
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    finishedWithError(task: task, error: e)
+                })
             }
         }
-        
-        task.state = .Canceling //error 的 state 也设为 .canceling
         self.saveTaskList()
     }
     
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
-        guard let task = self.taskByURLStr((downloadTask.response?.URL?.absoluteString)!) else { print("找不到 task "); return}
+        guard let task = self.taskByURLStr((downloadTask.response?.URL?.absoluteString)!) else {
+            print("TTDownloadManager :找不到 task ")
+            return
+        }
         
-        if totalBytesExpectedToWrite <= 0 {print("没有长度信息")}
+        if totalBytesExpectedToWrite <= 0 {
+            //print("TTDownloadManager :服务器没有提供文件长度信息")
+        }else if task.fileSize <= 0 {
+            task.fileSize = task.resumeSize + totalBytesExpectedToWrite
+            self.saveTaskList()
+        }
         
-        task.fileSize = task.alreadyGetLen + totalBytesExpectedToWrite
-        task.progress = Int(Float(totalBytesWritten + task.alreadyGetLen ) / Float(task.fileSize!) * 100)
+        task.totalBytesWritten = totalBytesWritten
+        task.totalBytesExpectedToWrite = totalBytesExpectedToWrite
         
-        if let progress = self.progress {
-            progress(task: task, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+        if let progress = self.progressBlock {
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                progress(task: task, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+            })
         }
     }
     
