@@ -181,9 +181,14 @@ extension TTDownloadTask{
         let url = dicData["url"] as! String
         let dir = dicData["dir"] as! String
         let fileSize = (dicData["fileSize"] as! NSNumber).longLongValue
-        let state = TTDownloadTaskState(rawValue: ( dicData["state"] as! NSNumber ).longValue )
+        var state = TTDownloadTaskState(rawValue: ( dicData["state"] as! NSNumber ).longValue )
         let task = TTDownloadTask(urlStr: url, dir: dir)
         task.fileSize = fileSize
+        
+        if state == .Running{
+            //如果任务在后台执行时失败，状态可能保持.Running
+            state = .Failed
+        }
         task.state = state!
         
         if let data = task.resumeData {
