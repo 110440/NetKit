@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 //MARK:- DownloadManager
 public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLSessionDelegate,NSURLSessionTaskDelegate {
@@ -64,6 +65,9 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
     public var unFinishedList:[TTDownloadTask] {
         return self.taskList.filter{ !$0.finished }
     }
+    public var runningList:[TTDownloadTask] {
+        return self.taskList.filter{ $0.state == .Running }
+    }
     
     public init(downloadDir:String,backgroundEnable:Bool = false ) {
         
@@ -71,6 +75,7 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         self.backgroundEnable = backgroundEnable
         super.init()
         self.loadTaskList()
+        self.addObserverForEnterBackgroud()
     }
     
     //MARK: save & load list
@@ -146,6 +151,22 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         }
     }
     
+    //MARK: 监听程序进入后台消息,暂停全部任务，再重新启动
+    private func addObserverForEnterBackgroud(){
+        guard self.backgroundEnable else {return}
+        NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationDidEnterBackgroundNotification, object: nil, queue: nil) { (notification) -> Void in
+            let tasks = self.runningList
+            for task in tasks {
+                task.restart = true
+                task.suspend()
+            }
+        }
+    }
+    
+    deinit{
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
     //MARK: downloadTask delegate
     
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
@@ -181,6 +202,7 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
             }
             
             task.state = .Completed
+            task.totalBytesWritten = task.fileSize - task.resumeSize //当后台运行时，progress无法得到通知，这里手动改写
             task._finished = true
             
             if let finish = self.finishedBlock {
@@ -244,6 +266,12 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         
         if e.code == NSURLErrorCancelled {
             task.state = .Suspended
+            if task.restart {
+                task.restart = false
+                task.resume()
+                self.saveTaskList()
+                return
+            }
         }else{
             task.state = .Failed
             if let finishedWithError = self.finishedWithErrorBlock{

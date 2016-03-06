@@ -37,6 +37,8 @@ public class TTDownloadTask {
         return TTGetFileSizeStr( self.totalBytesWritten + self.resumeSize )
     }
     
+    internal var restart:Bool = false
+    
     // 0 ~ 100
     public var progress:Int {
         if self.finished { return 100 }
