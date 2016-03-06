@@ -85,6 +85,8 @@
 		D48093FE1C89BAE9007E8C9E /* testHttp */ = {
 			isa = PBXGroup;
 			children = (
+				D4EB6A6A1C5F9A4500EA29E2 /* testAPI.swift */,
+				D4EB6A681C5F9A3A00EA29E2 /* weatherObj.swift */,
 				D48094001C89BB29007E8C9E /* TestNetKit.swift */,
 			);
 			name = testHttp;
@@ -122,8 +124,6 @@
 			children = (
 				D48093FF1C89BB12007E8C9E /* testDownload */,
 				D48093FE1C89BAE9007E8C9E /* testHttp */,
-				D4EB6A6A1C5F9A4500EA29E2 /* testAPI.swift */,
-				D4EB6A681C5F9A3A00EA29E2 /* weatherObj.swift */,
 				D4EB6A431C5F99C000EA29E2 /* AppDelegate.swift */,
 				D4EB6A451C5F99C000EA29E2 /* ViewController.swift */,
 				D4EB6A471C5F99C000EA29E2 /* Main.storyboard */,

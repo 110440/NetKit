@@ -23,7 +23,6 @@ public class NetKitGloble{
 }
 
 // MARK:- swiftyJSON extension : To swiftyJSONAble object
-
 public extension JSON{
     
     func toObject<T:TSwiftyJSONAble>(objectType:T.Type)->T?{
@@ -38,7 +37,7 @@ public extension JSON{
     }
 }
 
-// MARK: toDictionary 使用的 把 数组 按类型转成 AnyObject
+// MARK: toDictionary 使用的, 把 数组 按类型转成 AnyObject
 public func TTparseObjArrayToAnyObjArray(obj:Array<AnyObject>?)-> Array<AnyObject>?{
     
     guard let obj = obj else { return nil }
@@ -62,10 +61,13 @@ public extension String {
     var URLEscapedString: String {
         return self.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
     }
+    var URLEscapedStringInGB18030:String{
+        let string = CFURLCreateStringByAddingPercentEscapes(nil, (self as CFString) ,nil,(":/?#[]@!$&’()*+,;=" as CFString), UInt32( CFStringEncodings.GB_18030_2000.rawValue) )
+        return string as String
+    }
 }
 
 //MARK:- base type TSwiftyJSONAble
-
 extension String:TSwiftyJSONAble{
     public init?(json: JSON) {
         self = json.stringValue
@@ -95,3 +97,4 @@ extension Bool:TSwiftyJSONAble{
         self = json.boolValue
     }
 }
+

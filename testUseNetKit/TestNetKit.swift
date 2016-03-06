@@ -24,32 +24,27 @@ class TestNetKit:UIViewController {
     func test(){
         
         
-        let key = "8dd33c1df29d46e3909f174f1f543c5f"
+        let key = "f34GZCoqOBSK69QYYnqdg5xz"
         let city = "湛江"
         
         // config netKit
         NetKitGloble.willReturnObjectBlock = { json -> (JSON?,NSError?) in
-            let error_code = json["error_code"].intValue
+            let error_code = json["error"].intValue
             if error_code != 0 {
-                let e = NSError(domain:json["reason"].stringValue, code: error_code, userInfo: nil )
+                let e = NSError(domain:json["status"].stringValue, code: error_code, userInfo: nil )
                 return (nil,e)
             }
-            return (json["result"],nil)
+            return (json["results"],nil)
         }
-        NetKitGloble.addingParameters["key"] = key
+        NetKitGloble.addingParameters["ak"] = key
+        NetKitGloble.addingParameters["output"] = "json"
+        NetKitGloble.addingParameters["mcode"] = "com.tanson.NetKit.testUseNetKit"
         
-        let req = Alamofire.request(testAPI.GetWeather(city)).responseObject { (response, object:ResultObj?, error) -> () in
-            
-            if error?.code == NSURLErrorCancelled{
-                print("取消")
-            }
-            
+        Alamofire.request(testAPI.GetWeather(city)).responseArray { (response, object:[TestModel]?, error) -> () in
             if let object = object{
                 dump(object)
             }
-            
         }
-        req.cancel()
         
     }
 }

@@ -16,7 +16,7 @@ enum testAPI:NetKitTarget{
 
 extension testAPI {
     
-    var baseURLString:String { return "http://apis.haoservice.com" }
+    var baseURLString:String { return "http://api.map.baidu.com/telematics/v3/" }
     
     var path: String {
         switch self {
@@ -30,7 +30,7 @@ extension testAPI {
     var parameters: [String: AnyObject]? {
         switch self{
         case .GetWeather(let city):
-            return ["cityname" :city]
+            return ["location" :city]
         }
     }
 

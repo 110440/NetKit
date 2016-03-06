@@ -16,10 +16,10 @@ public extension Alamofire.Request {
     public func responseObject<T:TSwiftyJSONAble>(completionHandler: (response: NSURLResponse?,object: T?, error: NSError?) -> () ) -> Self{
         return responseJSON(completionHandler: { response in
             switch response.result{
-            case .Success(let value):
-                var json = JSON(value)
+            case .Success(let jsonValue):
+                var json = JSON(jsonValue) // swiftyJSON
 
-                // 可以在willReturnObjectBlock里处理业务逻辑的错误 code , msg , result
+                // 可以在willReturnObjectBlock里处理业务逻辑的错误 (code , msg , result) 协议
                 if let willReturnObjectBlock = NetKitGloble.willReturnObjectBlock {
                     
                     let (newjson,error) = willReturnObjectBlock(json: json)

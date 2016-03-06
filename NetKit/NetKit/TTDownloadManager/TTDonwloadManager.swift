@@ -202,7 +202,7 @@ public class TTDownloadManager : NSObject, NSURLSessionDownloadDelegate , NSURLS
         }
         
         if task.fileSize <= 0 {
-            task.fileSize = task.resumeSize + task.totalBytesExpectedToWrite
+            task.fileSize = task.resumeSize + task.totalBytesWritten
         }
         self.saveTaskList()
     }

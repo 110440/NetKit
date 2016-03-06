@@ -20,21 +20,7 @@ public protocol TToDictionaryAble{
     func toDictionary()->Dictionary<String,AnyObject>
 }
 
-public extension TSwiftyJSONAble{
-    
-    public static func arrayFromData(obj:AnyObject) -> [Self]? {
-        
-        let mappedArray:JSON = JSON(obj)
-        let mappedObjectsArray = mappedArray.arrayValue
-            .map({ self.init(json: $0) }) // Map to T
-            .filter({ $0 != nil }) // Filter out failed objects
-            .map({ $0! }) // Cast to non optionals array
-        return mappedObjectsArray
-    }
-}
-
 //MARK:- NetKitTarget
-
 public protocol NetKitTarget:URLRequestConvertible{
     var baseURLString:String{get}
     var path:String{get}
