@@ -13,6 +13,8 @@ class DownloadCellTableViewCell: UITableViewCell {
     @IBOutlet weak var fileName: UILabel!
     @IBOutlet weak var progress: UILabel!
     @IBOutlet weak var cureentSize: UILabel!
+    @IBOutlet weak var speed: UILabel!
+    @IBOutlet weak var state: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
