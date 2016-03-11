@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D454EEAF1C888B9700992537 /* TTDonwloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D454EEAC1C888B9700992537 /* TTDonwloadManager.swift */; };
-		D454EEB01C888B9700992537 /* TTDownloadHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D454EEAD1C888B9700992537 /* TTDownloadHelper.swift */; };
-		D454EEB11C888B9700992537 /* TTDownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D454EEAE1C888B9700992537 /* TTDownloadTask.swift */; };
+		D447A26D1C928804003993A3 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26A1C928804003993A3 /* DownloadManager.swift */; };
+		D447A26E1C928804003993A3 /* DownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26B1C928804003993A3 /* DownloadTask.swift */; };
+		D447A26F1C928804003993A3 /* DownloadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26C1C928804003993A3 /* DownloadUtil.swift */; };
 		D4C8FA4F1C60DAAD00E59F54 /* NetKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C8FA4E1C60DAAD00E59F54 /* NetKit.swift */; };
 		D4EB6A111C5F984100EA29E2 /* NetKit.h in Headers */ = {isa = PBXBuildFile; fileRef = D4EB6A101C5F984100EA29E2 /* NetKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D4EB6A1B1C5F987500EA29E2 /* Alamofire+TNetKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4EB6A181C5F987500EA29E2 /* Alamofire+TNetKit.swift */; };
@@ -71,9 +71,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		D454EEAC1C888B9700992537 /* TTDonwloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTDonwloadManager.swift; sourceTree = "<group>"; };
-		D454EEAD1C888B9700992537 /* TTDownloadHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTDownloadHelper.swift; sourceTree = "<group>"; };
-		D454EEAE1C888B9700992537 /* TTDownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TTDownloadTask.swift; sourceTree = "<group>"; };
+		D447A26A1C928804003993A3 /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
+		D447A26B1C928804003993A3 /* DownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadTask.swift; sourceTree = "<group>"; };
+		D447A26C1C928804003993A3 /* DownloadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadUtil.swift; sourceTree = "<group>"; };
 		D4C8FA4E1C60DAAD00E59F54 /* NetKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetKit.swift; sourceTree = "<group>"; };
 		D4EB6A0D1C5F984100EA29E2 /* NetKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NetKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4EB6A101C5F984100EA29E2 /* NetKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetKit.h; sourceTree = "<group>"; };
@@ -99,9 +99,9 @@
 		D454EEAB1C888B9700992537 /* TTDownloadManager */ = {
 			isa = PBXGroup;
 			children = (
-				D454EEAC1C888B9700992537 /* TTDonwloadManager.swift */,
-				D454EEAD1C888B9700992537 /* TTDownloadHelper.swift */,
-				D454EEAE1C888B9700992537 /* TTDownloadTask.swift */,
+				D447A26A1C928804003993A3 /* DownloadManager.swift */,
+				D447A26B1C928804003993A3 /* DownloadTask.swift */,
+				D447A26C1C928804003993A3 /* DownloadUtil.swift */,
 			);
 			path = TTDownloadManager;
 			sourceTree = "<group>";
@@ -304,13 +304,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D454EEAF1C888B9700992537 /* TTDonwloadManager.swift in Sources */,
 				D4EB6A1B1C5F987500EA29E2 /* Alamofire+TNetKit.swift in Sources */,
+				D447A26D1C928804003993A3 /* DownloadManager.swift in Sources */,
 				D4EB6A1C1C5F987500EA29E2 /* SwiftyJSON.swift in Sources */,
-				D454EEB11C888B9700992537 /* TTDownloadTask.swift in Sources */,
 				D4C8FA4F1C60DAAD00E59F54 /* NetKit.swift in Sources */,
+				D447A26E1C928804003993A3 /* DownloadTask.swift in Sources */,
 				D4EB6A1D1C5F987500EA29E2 /* TNetKitProtocol.swift in Sources */,
-				D454EEB01C888B9700992537 /* TTDownloadHelper.swift in Sources */,
+				D447A26F1C928804003993A3 /* DownloadUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -42,7 +42,7 @@ class ViewController: UITableViewController {
             let vc = TestNetKit()
             self.navigationController?.pushViewController(vc, animated: true)
         }else{
-            let vc = TestDownload()
+            let vc = DownloadListViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

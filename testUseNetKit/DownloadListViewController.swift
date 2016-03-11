@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import NetKit
 
 
 private var urlStrs = [
@@ -27,10 +27,15 @@ class DownloadListViewController: UITableViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        let rightItem = UIBarButtonItem(title: "Add", style: .Plain, target: self, action: "Add")
+        let btn = UIButton(type: UIButtonType.System)
+        btn.setTitle("+ 增加下载文件", forState: UIControlState.Normal)
+        btn.addTarget(self, action: "ADD", forControlEvents: UIControlEvents.TouchUpInside)
+        self.navigationItem.titleView = btn
+        
+        let rightItem = UIBarButtonItem(title: "完成列表", style: .Plain, target: self, action: "finished")
         self.navigationItem.rightBarButtonItem = rightItem
         
-        self.title = "下载列表"
+        //self.title = "下载列表"
         
         self.tableView.registerNib(UINib(nibName: "DownloadCellTableViewCell", bundle: nil), forCellReuseIdentifier: "cell")
         self.tableView.rowHeight = 58
@@ -54,7 +59,7 @@ class DownloadListViewController: UITableViewController {
 
     var addIndex = 0
     
-    func Add(){
+    func ADD(){
         let index = self.addIndex % urlStrs.count
         let urlStr = urlStrs[index]
         if let _ = downloadManager.newTask(urlStr){
@@ -62,7 +67,10 @@ class DownloadListViewController: UITableViewController {
         }
         self.addIndex++
     }
-    
+    func finished(){
+        let vc = FinishedDownloadTableViewController()
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return downloadManager.taskList.count

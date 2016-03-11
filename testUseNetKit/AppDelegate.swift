@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: () -> Void) {
-        gd.completionHandler = completionHandler
+        downloadManager.completionHandler = completionHandler
     }
 
 
