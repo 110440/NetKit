@@ -17,9 +17,11 @@ public extension Alamofire.Request {
         return responseJSON(completionHandler: { response in
             switch response.result{
             case .Success(let jsonValue):
-                var json = JSON(jsonValue) // swiftyJSON
-
-                // 可以在willReturnObjectBlock里处理业务逻辑的错误 (code , msg , result) 协议
+                // to swiftyJSON
+                var json = JSON(jsonValue)
+                
+                // 对于业务上的协议,这里可以有一次机会对返回的数据再进行过滤,设置NetKitGloble.willReturnObjectBlock就行
+                // 比如对返回 json 的 (code , msg , result) 字段进行处理
                 if let willReturnObjectBlock = NetKitGloble.willReturnObjectBlock {
                     
                     let (newjson,error) = willReturnObjectBlock(json: json)
@@ -41,7 +43,7 @@ public extension Alamofire.Request {
                 }
                 
             case .Failure(let error):
-                completionHandler(response: response.response, object: nil, error: error)
+                completionHandler(response: response.response, object: nil, error: error as NSError)
             }
         })
     }
@@ -58,7 +60,6 @@ public extension Alamofire.Request {
                 
                 var json = JSON(value)
                 
-                // 可以在willReturnObjectBlock里处理业务逻辑的错误 code , msg , result
                 if let willReturnObjectBlock = NetKitGloble.willReturnObjectBlock{
                     
                     let (newjson,error) = willReturnObjectBlock(json: json)
@@ -66,7 +67,7 @@ public extension Alamofire.Request {
                         completionHandler(response: response.response , object: nil, error: error)
                         return
                     }
-                    if newjson == nil{ fatalError("NetKit responseArray () willReturnObjectBlock must return newJson or error !") }
+                    if newjson == nil{ fatalError("NetKit responseArray() willReturnObjectBlock must return newJson or error !") }
                     json = newjson!
                 }
                 
@@ -84,7 +85,7 @@ public extension Alamofire.Request {
                 completionHandler(response: response.response , object: objectArray, error: nil)
                 
             case .Failure(let error):
-                completionHandler(response: response.response, object: nil, error: error)
+                completionHandler(response: response.response, object: nil, error: error as NSError)
             }
         })
     }

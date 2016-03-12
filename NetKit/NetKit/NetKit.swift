@@ -9,35 +9,20 @@
 import Foundation
 
 // MARK:- NetKitMethod
-
 public enum NetKitMethod: String {
     case OPTIONS, GET, HEAD, POST, PUT, PATCH, DELETE, TRACE, CONNECT
 }
 
-// MARK:- NetKit
 
+// MARK:- NetKit Globle config
 public class NetKitGloble{
     public static var addingParameters = [String:AnyObject]()
     public static var addingHTTPHeaderFields = [String:String]()
     public static var willReturnObjectBlock:((json:JSON) -> (JSON?,NSError?))?
 }
 
-// MARK:- swiftyJSON extension : To swiftyJSONAble object
-public extension JSON{
-    
-    func toObject<T:TSwiftyJSONAble>(objectType:T.Type)->T?{
-        return objectType.init(json: self)
-    }
-    
-    func toObjectArray<T:TSwiftyJSONAble>(objectType:T.Type)->[T]{
-        return self.arrayValue
-            .map({ objectType.init(json: $0) }) // Map to T
-            .filter({ $0 != nil }) // Filter out failed objects
-            .map({ $0! }) // Cast to non optionals array
-    }
-}
-
-// MARK: toDictionary 使用的, 把 数组 按类型转成 AnyObject
+// MARK: toDictionary 使用的, 把 数组 按类型转成 元素为 String,Int,Float,Double,Bool,Dictionary
+// 暂时不支持多维数组
 public func TTparseObjArrayToAnyObjArray(obj:Array<AnyObject>?)-> Array<AnyObject>?{
     
     guard let obj = obj else { return nil }
@@ -55,19 +40,8 @@ public func TTparseObjArrayToAnyObjArray(obj:Array<AnyObject>?)-> Array<AnyObjec
     return nil
 }
 
-// MARK:- URLEscapedString
 
-public extension String {
-    var URLEscapedString: String {
-        return self.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())!
-    }
-    var URLEscapedStringInGB18030:String{
-        let string = CFURLCreateStringByAddingPercentEscapes(nil, (self as CFString) ,nil,(":/?#[]@!$&’()*+,;=" as CFString), UInt32( CFStringEncodings.GB_18030_2000.rawValue) )
-        return string as String
-    }
-}
-
-//MARK:- base type TSwiftyJSONAble
+//MARK:- extension base type to comf TSwiftyJSONAble
 extension String:TSwiftyJSONAble{
     public init?(json: JSON) {
         self = json.stringValue

@@ -23,11 +23,10 @@ class TestNetKit:UIViewController {
     
     func test(){
         
-        
         let key = "f34GZCoqOBSK69QYYnqdg5xz"
         let city = "湛江"
-        
-        // config netKit
+
+        // 对返回的 josn 先拦截，针对业务逻辑进行处理,
         NetKitGloble.willReturnObjectBlock = { json -> (JSON?,NSError?) in
             let error_code = json["error"].intValue
             if error_code != 0 {
@@ -36,13 +35,20 @@ class TestNetKit:UIViewController {
             }
             return (json["results"],nil)
         }
+        //全局数据配置
         NetKitGloble.addingParameters["ak"] = key
         NetKitGloble.addingParameters["output"] = "json"
         NetKitGloble.addingParameters["mcode"] = "com.tanson.NetKit.testUseNetKit"
         
-        Alamofire.request(testAPI.GetWeather(city)).responseArray { (response, object:[TestModel]?, error) -> () in
+        let apiRequest = testAPI.GetWeather(city)
+        let _ = Alamofire.request(apiRequest).responseArray { (response, object:[TestModel]?, error) -> () in
             if let object = object{
                 dump(object)
+                //let dic = TTparseObjArrayToAnyObjArray(object)
+                //print(dic )
+            }
+            if error?.code == NSURLErrorCancelled{
+                
             }
         }
         

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4340D4B1C93D4570023C16C /* SwiftyJSON+JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4340D4A1C93D4570023C16C /* SwiftyJSON+JSONAble.swift */; };
+		D4340D541C93D6A30023C16C /* String+URLEscaped.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4340D531C93D6A30023C16C /* String+URLEscaped.swift */; };
 		D447A26D1C928804003993A3 /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26A1C928804003993A3 /* DownloadManager.swift */; };
 		D447A26E1C928804003993A3 /* DownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26B1C928804003993A3 /* DownloadTask.swift */; };
 		D447A26F1C928804003993A3 /* DownloadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A26C1C928804003993A3 /* DownloadUtil.swift */; };
@@ -71,6 +73,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D4340D4A1C93D4570023C16C /* SwiftyJSON+JSONAble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+JSONAble.swift"; sourceTree = "<group>"; };
+		D4340D531C93D6A30023C16C /* String+URLEscaped.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+URLEscaped.swift"; sourceTree = "<group>"; };
 		D447A26A1C928804003993A3 /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
 		D447A26B1C928804003993A3 /* DownloadTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadTask.swift; sourceTree = "<group>"; };
 		D447A26C1C928804003993A3 /* DownloadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadUtil.swift; sourceTree = "<group>"; };
@@ -120,6 +124,8 @@
 				D4C8FA4E1C60DAAD00E59F54 /* NetKit.swift */,
 				D4EB6A181C5F987500EA29E2 /* Alamofire+TNetKit.swift */,
 				D4EB6A1A1C5F987500EA29E2 /* TNetKitProtocol.swift */,
+				D4340D4A1C93D4570023C16C /* SwiftyJSON+JSONAble.swift */,
+				D4340D531C93D6A30023C16C /* String+URLEscaped.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -305,10 +311,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4EB6A1B1C5F987500EA29E2 /* Alamofire+TNetKit.swift in Sources */,
+				D4340D541C93D6A30023C16C /* String+URLEscaped.swift in Sources */,
 				D447A26D1C928804003993A3 /* DownloadManager.swift in Sources */,
 				D4EB6A1C1C5F987500EA29E2 /* SwiftyJSON.swift in Sources */,
 				D4C8FA4F1C60DAAD00E59F54 /* NetKit.swift in Sources */,
 				D447A26E1C928804003993A3 /* DownloadTask.swift in Sources */,
+				D4340D4B1C93D4570023C16C /* SwiftyJSON+JSONAble.swift in Sources */,
 				D4EB6A1D1C5F987500EA29E2 /* TNetKitProtocol.swift in Sources */,
 				D447A26F1C928804003993A3 /* DownloadUtil.swift in Sources */,
 			);
