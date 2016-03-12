@@ -1,3 +1,3 @@
 # NetKit
-NetKit on Alamofire in swift and swiftyJSON , objectMap , API router , download manager
+NetKit write on Alamofire and swiftyJSON , objectMap , API router , file download manager(backGroud,resume)
  
