@@ -21,7 +21,7 @@ class FinishedDownloadTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         self.title = "下载完成"
-        self.tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        self.tableView.registerClass(UITableViewCell.self , forCellReuseIdentifier: "cell")
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -53,6 +53,25 @@ class FinishedDownloadTableViewController: UITableViewController {
     }
     
 
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if let file = self.fileList?[indexPath.row] {
+            if file.fileName.hasSuffix(".jpg") || file.fileName.hasSuffix(".png"){
+                let vc = ShowImageViewController(nibName: "ShowImageViewController", bundle: nil)
+                let image = UIImage(contentsOfFile: file.filePath)
+                vc.img = image
+                let nav = UINavigationController(rootViewController: vc)
+                self.presentViewController(nav, animated: true, completion: { () -> Void in
+                    
+                })
+            }else{
+                
+                let sizeStr = DownloadUtil.getFileSizeStrByPath(file.filePath)
+                let alert = UIAlertView(title: "文件大小", message: sizeStr, delegate: nil, cancelButtonTitle: "OK ")
+                alert.show()
+            }
+        }
+
+    }
     
     // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {

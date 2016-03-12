@@ -59,7 +59,13 @@ public class DownloadTask {
         self.speed = 0
     }
     
-    internal func cancell(){self.state = .failed ; self.rawTask!.cancel();self.rawTask = nil }
+    internal func cancell(){
+        guard let rawTask = self.rawTask else{return}
+        rawTask.cancel()
+        self.state = .failed
+        self.rawTask = nil
+    }
+    
     internal func pauseOrResume(){
         switch self.state {
         case .downloading:

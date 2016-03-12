@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4340D6E1C93E0700023C16C /* ShowImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4340D6C1C93E0700023C16C /* ShowImageViewController.swift */; };
+		D4340D6F1C93E0700023C16C /* ShowImageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D4340D6D1C93E0700023C16C /* ShowImageViewController.xib */; };
 		D447A2731C928823003993A3 /* DownloadCellTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A2701C928823003993A3 /* DownloadCellTableViewCell.swift */; };
 		D447A2741C928823003993A3 /* DownloadCellTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = D447A2711C928823003993A3 /* DownloadCellTableViewCell.xib */; };
 		D447A2751C928823003993A3 /* DownloadListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D447A2721C928823003993A3 /* DownloadListViewController.swift */; };
@@ -55,6 +57,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D4340D6C1C93E0700023C16C /* ShowImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowImageViewController.swift; sourceTree = "<group>"; };
+		D4340D6D1C93E0700023C16C /* ShowImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShowImageViewController.xib; sourceTree = "<group>"; };
 		D447A2701C928823003993A3 /* DownloadCellTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadCellTableViewCell.swift; sourceTree = "<group>"; };
 		D447A2711C928823003993A3 /* DownloadCellTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DownloadCellTableViewCell.xib; sourceTree = "<group>"; };
 		D447A2721C928823003993A3 /* DownloadListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadListViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +101,8 @@
 		D48093FF1C89BB12007E8C9E /* testDownload */ = {
 			isa = PBXGroup;
 			children = (
+				D4340D6C1C93E0700023C16C /* ShowImageViewController.swift */,
+				D4340D6D1C93E0700023C16C /* ShowImageViewController.xib */,
 				D447A2761C92882E003993A3 /* FinishedDownloadTableViewController.swift */,
 				D447A2701C928823003993A3 /* DownloadCellTableViewCell.swift */,
 				D447A2711C928823003993A3 /* DownloadCellTableViewCell.xib */,
@@ -230,6 +236,7 @@
 				D4EB6A4E1C5F99C000EA29E2 /* LaunchScreen.storyboard in Resources */,
 				D447A2741C928823003993A3 /* DownloadCellTableViewCell.xib in Resources */,
 				D4EB6A4B1C5F99C000EA29E2 /* Assets.xcassets in Resources */,
+				D4340D6F1C93E0700023C16C /* ShowImageViewController.xib in Resources */,
 				D4EB6A491C5F99C000EA29E2 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,6 +252,7 @@
 				D447A2731C928823003993A3 /* DownloadCellTableViewCell.swift in Sources */,
 				D4EB6A691C5F9A3A00EA29E2 /* weatherObj.swift in Sources */,
 				D447A2751C928823003993A3 /* DownloadListViewController.swift in Sources */,
+				D4340D6E1C93E0700023C16C /* ShowImageViewController.swift in Sources */,
 				D4EB6A6B1C5F9A4500EA29E2 /* testAPI.swift in Sources */,
 				D447A2771C92882E003993A3 /* FinishedDownloadTableViewController.swift in Sources */,
 				D4EB6A441C5F99C000EA29E2 /* AppDelegate.swift in Sources */,
@@ -318,7 +326,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -356,7 +364,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -369,6 +377,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = testUseNetKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tanson.NetKit.testUseNetKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -381,6 +390,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = testUseNetKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tanson.NetKit.testUseNetKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";

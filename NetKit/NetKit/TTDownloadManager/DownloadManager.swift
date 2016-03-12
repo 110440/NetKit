@@ -12,7 +12,7 @@ import UIKit
 public class DownloadManager:NSObject,NSURLSessionDelegate,NSURLSessionDownloadDelegate {
     
     private lazy var session:NSURLSession = {
-        let sessionConfiguration = NSURLSessionConfiguration.backgroundSessionConfiguration(backgroundSessionIdentifier)
+        let sessionConfiguration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier(backgroundSessionIdentifier)
         sessionConfiguration.timeoutIntervalForRequest = 15
         return NSURLSession(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
     }()
@@ -237,23 +237,18 @@ public class DownloadManager:NSObject,NSURLSessionDelegate,NSURLSessionDownloadD
         guard let downloadTask = self.taskByURLStr(task.taskDescription) else {return}
         
         if let error = error {
-            print("downloadError:\(error)")
-            
-            if #available(iOS 8.0, *) {
-                if error.code == NSURLErrorCancelledReasonInsufficientSystemResources{
-                    downloadTask.rawTask = nil
-                    downloadTask.state = .failed
-                    dispatch_async(dispatch_get_main_queue()) {
-                        if let errorBlock = self.downloadError{
-                            errorBlock(task: downloadTask, error: error)
-                        }
+            //print("downloadError:\(error)")
+            if error.code == NSURLErrorCancelledReasonInsufficientSystemResources{
+                downloadTask.rawTask = nil
+                downloadTask.state = .failed
+                dispatch_async(dispatch_get_main_queue()) {
+                    if let errorBlock = self.downloadError{
+                        errorBlock(task: downloadTask, error: error)
                     }
-                    return
                 }
-            } else {
-                // Fallback on earlier versions
+                return
             }
-            
+
             if let errorUserInfo : NSDictionary = error.userInfo{
                 if let resumeData = errorUserInfo.objectForKey(NSURLSessionDownloadTaskResumeData) as? NSData {
                     self.saveResumeData(resumeData, forTask: downloadTask)
@@ -404,7 +399,7 @@ extension DownloadManager{
             cacheFileHandle.synchronizeFile()
             cacheFileHandle.closeFile()
         }catch let error {
-            print("DownloadManager saveResumeData error:\(error) ")
+            print("DownloadManager saveResumeData copy cache file error:\(error) ")
         }
         
     }
