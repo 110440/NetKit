@@ -8,14 +8,8 @@
 
 import Foundation
 
-public typealias downloadFinishedBlock = (task:DownloadTask)->Void
-public typealias downloadProgressBlock = (task:DownloadTask,index:Int)->Void
-public typealias downloadFinishedErrorBlock = (task:DownloadTask,error:NSError)->Void
-public typealias downloadAddUnFinishTaskBlock = (task:DownloadTask)->Void
 
 internal let backgroundSessionIdentifier = (NSBundle.mainBundle().bundleIdentifier)! + "_tt_background_SessionIdentifier"
-
-internal let tasklistPlistName = "tt_downloadManager_tasklist.plist"
 
 public class DownloadUtil {
     
@@ -93,4 +87,14 @@ public class DownloadUtil {
         return retStr!
     }
 
+    public class func documentPath()->NSString{
+        let docPath = (NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true).first)!
+        return docPath as NSString
+    }
+ 
+    public class func getLastNameByURLStr(urlStr:String)->String{
+        var name = (urlStr as NSString).lastPathComponent
+        name = DownloadUtil.removPercentForUrlStr(name)
+        return name
+    }
 }

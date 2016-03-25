@@ -22,13 +22,14 @@ private var urlStrs = [
     "http://zjdx.downg.com//201602/xiaoqReader2.10.0.159_DownG.com.rar",
 ]
 
-let downloadManager = DownloadManager(dir: "TTDownload")
+//let downloadManager = DownloadManager(dir: "TTDownload")
 
-class DownloadListViewController: UITableViewController {
+class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
         
         let rightItem = UIBarButtonItem(title: "finished", style: .Plain, target: self, action: "finished")
         self.navigationItem.rightBarButtonItem = rightItem
@@ -44,20 +45,29 @@ class DownloadListViewController: UITableViewController {
         self.tableView.rowHeight = 58
         self.tableView.estimatedRowHeight = 58.0
         
-        downloadManager.downloadFinied = { [weak self] t  in
+        Downloader.instance.taskCompletionHander = { [weak self] urlStrs  in
             self?.tableView.reloadData()
         }
         
-        downloadManager.downloadProgress = { [weak self] (t,index) in
+        Downloader.instance.taskProgressHander = { [weak self] urlStrs  in
             self?.tableView.reloadData()
         }
         
-        downloadManager.downloadError = { [weak self] t  in
-             self?.tableView.reloadData()
+        Downloader.instance.taskFailedHaner = { [weak self] (urlStr,error ) in
+            var i = 0
+            for item in Downloader.instance.downloadItemList{
+                if item.urlStr == urlStr{
+                   break
+                }
+                i++
+            }
+            if let cell = self?.tableView.cellForRowAtIndexPath(NSIndexPath(forRow: i, inSection: 0)){
+                (cell as? DownloadCellTableViewCell)?.state.text = "下载错误"
+                cell.contentView.backgroundColor = UIColor.redColor()
+            }
+            print(error)
         }
-        downloadManager.downloadAddUnfinishTask = { [weak self] t in
-            self?.tableView.reloadData()
-        }
+  
     }
 
     var addIndex = 0
@@ -65,19 +75,36 @@ class DownloadListViewController: UITableViewController {
     func Add(){
         let index = self.addIndex % urlStrs.count
         let urlStr = urlStrs[index]
-        if let _ = downloadManager.newTask(urlStr){
-            self.tableView.reloadData()
-        }
+        Downloader.instance.startDownloadTask(urlStr)
+        self.tableView.reloadData()
         self.addIndex++
     }
+    
     
     func finished(){
         let vc = FinishedDownloadTableViewController()
         self.navigationController?.pushViewController(vc, animated: true)
     }
+
+    
+    func Input(){
+        
+        let alert = UIAlertView(title: "输入url", message: "", delegate: self, cancelButtonTitle: "OK ")
+        alert.alertViewStyle = .PlainTextInput
+        alert.show()
+    }
+    
+    func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
+        let text = alertView.textFieldAtIndex(0)?.text
+        if text != nil{
+            Downloader.instance.startDownloadTask(text!)
+            self.tableView.reloadData()
+            
+        }
+    }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return downloadManager.taskList.count
+        return Downloader.instance.downloadItemList.count
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -86,10 +113,11 @@ class DownloadListViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let task = downloadManager.taskList[indexPath.row]
+        let row  = indexPath.row
+        let task = Downloader.instance.downloadItemList[row]
         let cell = tableView.dequeueReusableCellWithIdentifier("cell",forIndexPath: indexPath) as! DownloadCellTableViewCell
-        cell.fileName.text = task.fileName
-        cell.progress.text = String(format: "%.0f", task.progress*100) + "%"
+        cell.fileName.text = task.name
+        cell.progress.text = task.progressString
 
         cell.speed.text = task.speedString + "/s"
         
@@ -117,12 +145,15 @@ class DownloadListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if let task = downloadManager.taskByIndex(indexPath.row){
-            let cell = tableView.cellForRowAtIndexPath(indexPath)
-            cell?.setSelected(false, animated: true)
-            
-            downloadManager.stopOrStartTaskByURLStr(task.urlStr)
-
+        
+        let item = Downloader.instance.downloadItemList[indexPath.row]
+        let cell = tableView.cellForRowAtIndexPath(indexPath)
+        cell?.setSelected(false, animated: true)
+        
+        if item.state == .downloading {
+            Downloader.instance.pausedTaskByURLStr(item.urlStr)
+        }else{
+            Downloader.instance.startDownloadTask(item.urlStr)
         }
     }
     
@@ -139,11 +170,9 @@ class DownloadListViewController: UITableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            
-            if let task = downloadManager.taskByIndex(indexPath.row){
-            downloadManager.deleteTask(task)
+            let item = Downloader.instance.downloadItemList[indexPath.row]
+            Downloader.instance.deleteItemByURLStr(item.urlStr)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
-            }
         }
     }
 

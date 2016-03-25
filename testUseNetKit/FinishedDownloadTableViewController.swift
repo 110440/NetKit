@@ -26,7 +26,7 @@ class FinishedDownloadTableViewController: UITableViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        self.fileList = downloadManager.getDownloadFiniedList()
+        self.fileList = Downloader.instance.getDownloadFiniedList()
         self.tableView.reloadData()
     }
 
@@ -86,7 +86,7 @@ class FinishedDownloadTableViewController: UITableViewController {
         if editingStyle == .Delete {
             // Delete the row from the data source
             
-            downloadManager.deleteFinishedFile( self.fileList![indexPath.row].fileName )
+            Downloader.instance.deleteFinishedFile( self.fileList![indexPath.row].fileName )
             self.fileList?.removeAtIndex(indexPath.row)
             
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Top)
