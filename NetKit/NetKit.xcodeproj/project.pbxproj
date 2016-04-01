@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4192EC31CAE578C005D5FAE /* BigDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4192EC11CAE578C005D5FAE /* BigDownloader.swift */; };
+		D4192EC41CAE578C005D5FAE /* SmallDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4192EC21CAE578C005D5FAE /* SmallDownloader.swift */; };
 		D4340D4B1C93D4570023C16C /* SwiftyJSON+JSONAble.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4340D4A1C93D4570023C16C /* SwiftyJSON+JSONAble.swift */; };
 		D4340D541C93D6A30023C16C /* String+URLEscaped.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4340D531C93D6A30023C16C /* String+URLEscaped.swift */; };
-		D4934B691CA574C8006EA1C0 /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4934B661CA574C8006EA1C0 /* Downloader.swift */; };
 		D4934B6A1CA574C8006EA1C0 /* DownloadItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4934B671CA574C8006EA1C0 /* DownloadItem.swift */; };
 		D4934B6B1CA574C8006EA1C0 /* DownloadUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4934B681CA574C8006EA1C0 /* DownloadUtil.swift */; };
 		D4C8FA4F1C60DAAD00E59F54 /* NetKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C8FA4E1C60DAAD00E59F54 /* NetKit.swift */; };
@@ -73,9 +74,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D4192EC11CAE578C005D5FAE /* BigDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BigDownloader.swift; sourceTree = "<group>"; };
+		D4192EC21CAE578C005D5FAE /* SmallDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SmallDownloader.swift; sourceTree = "<group>"; };
 		D4340D4A1C93D4570023C16C /* SwiftyJSON+JSONAble.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SwiftyJSON+JSONAble.swift"; sourceTree = "<group>"; };
 		D4340D531C93D6A30023C16C /* String+URLEscaped.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+URLEscaped.swift"; sourceTree = "<group>"; };
-		D4934B661CA574C8006EA1C0 /* Downloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		D4934B671CA574C8006EA1C0 /* DownloadItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadItem.swift; sourceTree = "<group>"; };
 		D4934B681CA574C8006EA1C0 /* DownloadUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadUtil.swift; sourceTree = "<group>"; };
 		D4C8FA4E1C60DAAD00E59F54 /* NetKit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetKit.swift; sourceTree = "<group>"; };
@@ -103,7 +105,8 @@
 		D4934B651CA574C8006EA1C0 /* Downloader */ = {
 			isa = PBXGroup;
 			children = (
-				D4934B661CA574C8006EA1C0 /* Downloader.swift */,
+				D4192EC11CAE578C005D5FAE /* BigDownloader.swift */,
+				D4192EC21CAE578C005D5FAE /* SmallDownloader.swift */,
 				D4934B671CA574C8006EA1C0 /* DownloadItem.swift */,
 				D4934B681CA574C8006EA1C0 /* DownloadUtil.swift */,
 			);
@@ -310,9 +313,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D4192EC41CAE578C005D5FAE /* SmallDownloader.swift in Sources */,
 				D4EB6A1B1C5F987500EA29E2 /* Alamofire+TNetKit.swift in Sources */,
-				D4934B691CA574C8006EA1C0 /* Downloader.swift in Sources */,
 				D4340D541C93D6A30023C16C /* String+URLEscaped.swift in Sources */,
+				D4192EC31CAE578C005D5FAE /* BigDownloader.swift in Sources */,
 				D4934B6B1CA574C8006EA1C0 /* DownloadUtil.swift in Sources */,
 				D4EB6A1C1C5F987500EA29E2 /* SwiftyJSON.swift in Sources */,
 				D4934B6A1CA574C8006EA1C0 /* DownloadItem.swift in Sources */,

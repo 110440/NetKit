@@ -45,17 +45,17 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
         self.tableView.rowHeight = 58
         self.tableView.estimatedRowHeight = 58.0
         
-        Downloader.instance.taskCompletionHander = { [weak self] urlStrs  in
+        BigDownloader.sharedInstance.taskCompletionHander = { [weak self] urlStrs  in
             self?.tableView.reloadData()
         }
         
-        Downloader.instance.taskProgressHander = { [weak self] urlStrs  in
+        BigDownloader.sharedInstance.taskProgressHander = { [weak self] urlStrs  in
             self?.tableView.reloadData()
         }
         
-        Downloader.instance.taskFailedHaner = { [weak self] (urlStr,error ) in
+        BigDownloader.sharedInstance.taskFailedHaner = { [weak self] (urlStr,error ) in
             var i = 0
-            for item in Downloader.instance.downloadItemList{
+            for item in BigDownloader.sharedInstance.downloadItemList{
                 if item.urlStr == urlStr{
                    break
                 }
@@ -75,7 +75,7 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
     func Add(){
         let index = self.addIndex % urlStrs.count
         let urlStr = urlStrs[index]
-        Downloader.instance.startDownloadTask(urlStr)
+        BigDownloader.sharedInstance.startDownloadTask(urlStr)
         self.tableView.reloadData()
         self.addIndex++
     }
@@ -97,14 +97,14 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         let text = alertView.textFieldAtIndex(0)?.text
         if text != nil{
-            Downloader.instance.startDownloadTask(text!)
+            BigDownloader.sharedInstance.startDownloadTask(text!)
             self.tableView.reloadData()
             
         }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Downloader.instance.downloadItemList.count
+        return BigDownloader.sharedInstance.downloadItemList.count
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -114,7 +114,7 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let row  = indexPath.row
-        let task = Downloader.instance.downloadItemList[row]
+        let task = BigDownloader.sharedInstance.downloadItemList[row]
         let cell = tableView.dequeueReusableCellWithIdentifier("cell",forIndexPath: indexPath) as! DownloadCellTableViewCell
         cell.fileName.text = task.name
         cell.progress.text = task.progressString
@@ -146,14 +146,14 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let item = Downloader.instance.downloadItemList[indexPath.row]
+        let item = BigDownloader.sharedInstance.downloadItemList[indexPath.row]
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         cell?.setSelected(false, animated: true)
         
         if item.state == .downloading {
-            Downloader.instance.pausedTaskByURLStr(item.urlStr)
+            BigDownloader.sharedInstance.pausedTaskByURLStr(item.urlStr)
         }else{
-            Downloader.instance.startDownloadTask(item.urlStr)
+            BigDownloader.sharedInstance.startDownloadTask(item.urlStr)
         }
     }
     
@@ -170,8 +170,8 @@ class DownloadListViewController: UITableViewController ,UIAlertViewDelegate {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            let item = Downloader.instance.downloadItemList[indexPath.row]
-            Downloader.instance.deleteItemByURLStr(item.urlStr)
+            let item = BigDownloader.sharedInstance.downloadItemList[indexPath.row]
+            BigDownloader.sharedInstance.deleteItemByURLStr(item.urlStr)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
         }
     }

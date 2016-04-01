@@ -9,6 +9,10 @@
 import Foundation
 
 
+public typealias taskCompletionBlock = (urlStr:String)->Void
+public typealias taskProgressBlock   = (urlStr:String)->Void
+public typealias taskFailedBlock     = (urlStr:String,error:NSError)->Void
+
 internal let backgroundSessionIdentifier = (NSBundle.mainBundle().bundleIdentifier)! + "_tt_background_SessionIdentifier"
 
 public class DownloadUtil {
@@ -47,6 +51,11 @@ public class DownloadUtil {
     
     public class func getFileSizeStrByPath(filePath:String)->String?{
         
+        let fileSize = self.getFileSizeByPath(filePath)
+        return DownloadUtil.getFileSizeStr(fileSize)
+    }
+    
+    public class func getFileSizeByPath(filePath:String)->Int64{
         let systemAttributes: AnyObject?
         var fileSize:Int64 = 0
         do {
@@ -55,12 +64,10 @@ public class DownloadUtil {
             fileSize =  freeSize?.longLongValue ?? 0
         } catch let error as NSError {
             print("Error fiel size  Info: Domain = \(error.domain), Code = \(error.code)")
-            return nil
+            return 0
         }
-        
-        return DownloadUtil.getFileSizeStr(fileSize)
+        return fileSize
     }
-    
     
     public class func getFreeDiskspace() -> Int64? {
         let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)
@@ -83,7 +90,7 @@ public class DownloadUtil {
             let str = CFURLCreateStringByReplacingPercentEscapesUsingEncoding(nil, (urlStr as CFString) ,("" as CFString), UInt32( CFStringEncodings.GB_18030_2000.rawValue))
             retStr = str as String
         }
-        if retStr == nil || retStr?.characters.count <= 0 { return "未知文件名" }
+        if retStr == nil || retStr?.characters.count <= 0 { return "未知字符" }
         return retStr!
     }
 

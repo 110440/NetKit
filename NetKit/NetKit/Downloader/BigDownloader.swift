@@ -8,15 +8,11 @@
 
 import Foundation
 
-public typealias taskCompletionBlock = (urlStr:String)->Void
-public typealias taskProgressBlock   = (urlStr:String)->Void
-public typealias taskFailedBlock     = (urlStr:String,error:NSError)->Void
-
-//MARK:- Downloader
-public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadDelegate {
+//MARK:- BigDownloader
+public class BigDownloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadDelegate {
     
-    public static let instance:Downloader = {
-       let downloader = Downloader()
+    public static let sharedInstance:BigDownloader = {
+       let downloader = BigDownloader()
         return downloader
     }()
     
@@ -27,7 +23,6 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
         } else {
             sessionConfiguration = NSURLSessionConfiguration.backgroundSessionConfiguration(backgroundSessionIdentifier)
         }
-        sessionConfiguration.timeoutIntervalForRequest = 15
         //sessionConfiguration.allowsCellularAccess = false
         return NSURLSession(configuration: sessionConfiguration, delegate: self, delegateQueue:nil)
     }
@@ -42,7 +37,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     public var taskProgressHander:taskProgressBlock?
     public var taskFailedHaner:taskFailedBlock?
     
-    public override init() {
+    private override init() {
         super.init()
         self.backgroundSesstion = self.createSession()
     }
@@ -73,7 +68,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     
     public func pausedTaskByURLStr(urlStr:String){
         if let item = self.getDownloadItemByURLStr(urlStr){
-            item.task?.cancelByProducingResumeData{ _ in }
+            (item.task as? NSURLSessionDownloadTask)?.cancelByProducingResumeData{ _ in }
             item.state = .paused
         }
     }
@@ -90,12 +85,12 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     //TODO: 多线程问题？
     public func deleteItemByURLStr(urlStr:String){
         var i = 0
-        for item in self.downloadItemList{
+        for (index,item) in self.downloadItemList.enumerate(){
             if item.urlStr == urlStr{
                 item.task?.cancel()
+                i = index
                 break
             }
-            i++
         }
         if i < self.downloadItemList.count{
             self.downloadItemList.removeAtIndex(i)
@@ -116,7 +111,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     //MARK: URLSession delegate
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL){
         
-        guard let url = downloadTask.originalRequest?.URL else { print("copy File no url in task ");return}
+        guard let url = downloadTask.originalRequest?.URL else { return}
         let item = self.getDownloadItemByURLStr(url.absoluteString)
         
         guard let downloadDirectory = self.downloadDirectory else{return}
@@ -130,7 +125,6 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
                 try fileManager.removeItemAtPath(desPath)
             }
             try fileManager.copyItemAtURL(location, toURL: NSURL(fileURLWithPath: desPath))
-            //print("filePath:\(desPath)")
         }catch let e {
             item?.state = .failed
             print("downloader copy file error: \(e)")
@@ -140,22 +134,24 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     
     
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
+        print( (downloadTask.response as! NSHTTPURLResponse).statusCode )
         let urlStr = downloadTask.originalRequest?.URL?.absoluteString ?? "未知URL"
         let item = self.getDownloadItemByURLStr(urlStr)
         
         if item == nil || item?.task == nil {
             //print("接收到上次未完成的进度")
-            downloadTask.cancelByProducingResumeData({ (data) -> Void in
-            })
+            downloadTask.cancelByProducingResumeData{ _ in }
             return
         }else{
-            item!.fileSize = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite:1
+            item!.fileSize = totalBytesExpectedToWrite
             item!.recvedSize = totalBytesWritten
             // speed
+            if totalBytesWritten < item!.snapshotSize{
+                item!.snapshotSize = totalBytesWritten
+            }
             let hotSize = totalBytesWritten - item!.snapshotSize
-            var downloadTime = NSDate().timeIntervalSinceDate(item!.startTime)
-            downloadTime = downloadTime < 1 ? 1:downloadTime
+            let downloadTime = NSDate().timeIntervalSinceDate(item!.startTime)
+            //downloadTime = downloadTime < 1 ? 1:downloadTime
             let speed = Float(hotSize) / Float( downloadTime )
             item!.speed = Int64(speed)
             
@@ -187,7 +183,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
 
                 //print(resumeDictionary)
                 
-                let fileSize = task.taskDescription ?? "1"
+                let fileSize = task.taskDescription ?? "-1"
                 let offset = resumeDictionary?.objectForKey("NSURLSessionResumeBytesReceived") as? NSNumber
                 let task   = self.backgroundSesstion.downloadTaskWithResumeData(resumeData)
                 
@@ -195,7 +191,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
                 downloadItem.task = task
                 downloadItem.recvedSize = offset?.longLongValue ?? 0
                 downloadItem.snapshotSize = downloadItem.recvedSize
-                downloadItem.fileSize = Int64(fileSize) ?? 1
+                downloadItem.fileSize = Int64(fileSize) ?? -1
                 
                 if item == nil {
                     self.downloadItemList.append(downloadItem)
@@ -229,7 +225,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
     
     public func URLSessionDidFinishEventsForBackgroundURLSession(session: NSURLSession) {
         
-        print("URLSessionDidFinishEventsForBackgroundURLSession")
+        //print("URLSessionDidFinishEventsForBackgroundURLSession")
         if let completionHandler = self.completionHandler{
             completionHandler()
             self.completionHandler = nil
@@ -239,7 +235,7 @@ public class Downloader: NSObject , NSURLSessionDelegate , NSURLSessionDownloadD
 
 
 // MARK:- 下载完成列表
-extension Downloader{
+extension BigDownloader{
     
     public func getDownloadFiniedList()->[DownloadFinishedFile]{
         
